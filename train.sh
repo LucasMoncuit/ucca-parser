@@ -20,7 +20,7 @@ de_test_20k_path=test-data/test-xml-gold/UCCA_German-20K
 gpu=4
 
 if [ ! -d "$save_path" ]; then
-    mkdir "$save_path"
+    mkdir -p "$save_path"
 fi
 
 python -u run.py train\
