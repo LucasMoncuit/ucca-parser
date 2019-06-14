@@ -12,6 +12,7 @@ gpu=1
 
 if [ ! -d "$save_path" ]; then
     mkdir -p "$save_path"
+    cp $config_path $save_path
 fi
 
 python -u run.py train\
