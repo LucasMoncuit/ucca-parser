@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-test_path=/data/wjiang/UCCA/test-data/test-xml/UCCA_French-20K
+test_path=test-data/test-xml/UCCA_French-20K
 save_path=./exp/multilingual-lexical/debug
 pred_path=$save_path/UCCA_French-20K
 language=fr

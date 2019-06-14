@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gold_path=/data/wjiang/UCCA/train-dev-data/dev-xml/UCCA_French-20K
+gold_path=train-dev-data/dev-xml/UCCA_French-20K
 save_path=./exp/multilingual-lexical/french/
 language=fr
 
