@@ -2,11 +2,53 @@ import os
 
 import torch
 
-from ucca.convert import xml2passage, from_text
+from ucca import core, layer0, textutil
+from ucca.convert import xml2passage
 from ucca.textutil import annotate_all
 from .dataset import TensorDataSet
 from .instance import Instance
+from tqdm import tqdm
 
+def from_text(text, passage_id="1", tokenized=False, one_per_line=False, extra_format=None, lang="en", *args, **kwargs):
+    """Converts from tokenized strings to a Passage object.
+
+    :param text: a multi-line string or a sequence of strings:
+                 each line will be a new paragraph, and blank lines separate passages
+    :param passage_id: prefix of ID to set for returned passages
+    :param tokenized: whether the text is already given as a list of tokens
+    :param one_per_line: each line will be a new passage rather than just a new paragraph
+    :param extra_format: value to set in passage.extra["format"]
+    :param lang: language to use for tokenization model
+
+    :return: generator of Passage object with only Terminal units
+    """
+    del args, kwargs
+    if isinstance(text, str):
+        text = text.splitlines()
+    if tokenized:
+        text = (text,)  # text is a list of tokens, not list of lines
+    p = l0 = paragraph = None
+    i = 0
+    for line in text:
+        if not tokenized:
+            line = line.strip()
+        if line or one_per_line:
+            if p is None:
+                p = core.Passage("%s_%d" % (passage_id, i), attrib=dict(lang=lang))
+                if extra_format is not None:
+                    p.extra["format"] = extra_format
+                l0 = layer0.Layer0(p)
+                #layer1.Layer1(p)
+                paragraph = 1
+            for lex in textutil.get_tokenizer(tokenized, lang=lang)(line):
+                l0.add_terminal(text=lex.orth_, punct=lex.is_punct, paragraph=paragraph)
+            paragraph += 1
+        if p and (not line or one_per_line):
+            yield p
+            p = None
+            i += 1
+    if p:
+        yield p
 
 class Corpus(object):
     def __init__(self, dic_name=None, lang=None):
@@ -38,8 +80,9 @@ class Corpus(object):
                     print(file_path)
                 passages.append(xml2passage(file_path))
         else:  # text file, not a directory
-            for passage in annotate_all(from_text(path, lang=self.lang), lang=self.lang):
-                passages.append(passage)
+            with open(path, encoding="utf-8") as f:
+                for passage in annotate_all(from_text(tqdm(list(f)), lang=self.lang, one_per_line=True), lang=self.lang):
+                    passages.append(passage)
         return passages
 
     def generate_inputs(self, vocab, is_training=False):
