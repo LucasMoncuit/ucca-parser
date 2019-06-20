@@ -2,18 +2,18 @@ import os
 
 import torch
 
-from ucca.convert import to_text, xml2passage
-
-from .instance import Instance
+from ucca.convert import xml2passage, from_text
+from ucca.textutil import annotate_all
 from .dataset import TensorDataSet
+from .instance import Instance
 
 
 class Corpus(object):
     def __init__(self, dic_name=None, lang=None):
         self.dic_name = dic_name
+        self.language = lang
         self.passages = self.read_passages(dic_name)
         self.instances = [Instance(passage) for passage in self.passages]
-        self.language = lang
 
     @property
     def num_sentences(self):
@@ -29,14 +29,17 @@ class Corpus(object):
     def __getitem(self, index):
         return self.passages[index]
 
-    @staticmethod
-    def read_passages(path):
+    def read_passages(self, path):
         passages = []
-        for file in sorted(os.listdir(path)):
-            file_path = os.path.join(path, file)
-            if os.path.isdir(file_path):
-                print(file_path)
-            passages.append(xml2passage(file_path))
+        if os.path.isdir(path):
+            for file in sorted(os.listdir(path)):
+                file_path = os.path.join(path, file)
+                if os.path.isdir(file_path):
+                    print(file_path)
+                passages.append(xml2passage(file_path))
+        else:  # text file, not a directory
+            for passage in annotate_all(from_text(path, lang=self.lang), lang=self.lang):
+                passages.append(passage)
         return passages
 
     def generate_inputs(self, vocab, is_training=False):
