@@ -40,7 +40,8 @@ class Vocab(object):
 
     def read_embedding(self, dim, pre_emb=None):
         if pre_emb:
-            assert dim == pre_emb.dim
+            print(pre_emb.dim)
+            '''assert dim == pre_emb.dim '''
             self.extend(pre_emb.words)
             embeddings = torch.zeros(self.num_word, pre_emb.dim)
             init.normal_(embeddings, 0, 1 / pre_emb.dim ** 0.5)

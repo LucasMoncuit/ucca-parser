@@ -326,6 +326,11 @@ class Global_Chart_Span_Parser(nn.Module):
                 )
         return accum_score_matrix[-1][0]
 
+    # TODO : Add a function "distance based loss", takes as parameters : --spans1, sen_lens1, spans2, sen_lens2
+
+    def distance_based_loss(self, spans1, sen_lens1, spans2, sen_lens2):
+
+
     def get_loss(self, spans, sen_lens, trees):
         batch_loss = []
         for i, length in enumerate(sen_lens):
@@ -336,6 +341,7 @@ class Global_Chart_Span_Parser(nn.Module):
             gold_score = self.get_gold_score(label_score, length, trees[i])
 
             batch_loss.append(pred_score - gold_score)
+        print(batch_loss)
         return batch_loss
 
     def predict(self, spans, sen_lens):

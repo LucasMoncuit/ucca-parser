@@ -1,3 +1,5 @@
+
+
 import datetime
 import math
 import os
@@ -43,6 +45,7 @@ class Trainer(object):
         ent_idxs = torch.split(ent_idxs, 5, dim=0)
         ent_iob_idxs = torch.split(ent_iob_idxs, 5, dim=0)
         for i, word_idx, pos_idx, dep_idx, ent_idx, ent_iob_idx in zip(range(0, batch_size, 5), word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs):
+            # TODO : Add a semi-supervised bilingual batch without gold trees, then pass this batch
             if torch.cuda.is_available():
                 span_loss, remote_loss = self.parser.parse(
                     word_idx.cuda(),
@@ -71,6 +74,7 @@ class Trainer(object):
             remote_losses += sum(remote_loss)
         loss = span_losses / batch_size + remote_losses
         loss.backward()
+        print(loss)
         nn.utils.clip_grad_norm_(self.parser.parameters(), 5.0)
         self.optimizer.step()
         return loss

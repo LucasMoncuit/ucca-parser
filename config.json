@@ -3,13 +3,13 @@
     {
         "type": "top-down", 
         
-        "word_dim": 300, 
+        "word_dim": 100,
         "pos_dim": 50,
         "dep_dim": 50,
         "ent_dim": 25,
         "ent_iob_dim": 25,
         
-        "lstm_layer": 2, 
+        "lstm_layer": 3,
         "lstm_dim": 400, 
         "lstm_drop": 0.4, 
         "emb_drop": 0.5, 

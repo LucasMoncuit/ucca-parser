@@ -34,7 +34,7 @@ class Corpus(object):
             passages.append(xml2passage(file_path))
         return passages
 
-    def generate_inputs(self, vocab, is_training=False):
+    def generate_inputs(self, vocab, is_training=False, alignments=None):
         word_idxs = []
         pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs = [], [], [], []
         trees, all_nodes, all_remote = [], [], []
@@ -79,15 +79,17 @@ class Corpus(object):
             trees,
             all_nodes,
             all_remote,
+            alignments or [[] * len(word_idxs)],
         )
 
 
 class Embedding(object):
-    def __init__(self, words, vectors):
+    def __init__(self, words, vectors, lang):
         super(Embedding, self).__init__()
 
         self.words = words
         self.vectors = vectors
+        self.lang = lang
         self.pretrained = {w: v for w, v in zip(words, vectors)}
 
     def __len__(self):
@@ -104,15 +106,15 @@ class Embedding(object):
         return len(self.vectors[0])
 
     @classmethod
-    def load(cls, fname, smooth=True):
+    def load(cls, fname, lang_name, smooth=True):
         with open(fname, 'r') as f:
             lines = [line for line in f]
         splits = [line.split() for line in lines[1:]]
         reprs = [(s[0], list(map(float, s[1:]))) for s in splits]
         words, vectors = map(list, zip(*reprs))
         vectors = torch.tensor(vectors)
+        lang = lang_name[24:26].lower()
         if smooth:
             vectors /= torch.std(vectors)
-        embedding = cls(words, vectors)
-
+        embedding = cls(words, vectors, lang)
         return embedding
