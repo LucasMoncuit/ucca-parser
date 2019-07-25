@@ -326,10 +326,6 @@ class Global_Chart_Span_Parser(nn.Module):
                 )
         return accum_score_matrix[-1][0]
 
-    # TODO : Add a function "distance based loss", takes as parameters : --spans1, sen_lens1, spans2, sen_lens2
-
-    def distance_based_loss(self, spans1, sen_lens1, spans2, sen_lens2):
-
 
     def get_loss(self, spans, sen_lens, trees):
         batch_loss = []

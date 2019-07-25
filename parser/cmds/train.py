@@ -5,6 +5,7 @@ from parser import UCCA_Parser
 import torch.optim as optim
 import torch
 import torch.utils.data as Data
+import numpy as np
 
 from parser.utils import (
     Corpus,
@@ -24,6 +25,17 @@ class Train(object):
         subparser.add_argument("--train_path", required=True, help="train data dir")
         subparser.add_argument("--dev_path", required=True, help="dev data dir")
         subparser.add_argument("--emb_path", help="pretrained embedding path", default="")
+        subparser.add_argument("--en_train_path", required=True, help="en train data dir")
+        subparser.add_argument("--fr_train_path", required=True, help="fr train data dir")
+        subparser.add_argument("--de_train_path", required=True, help="de train data dir")
+
+        subparser.add_argument("--parallel", required=True, help="See spacy")
+        subparser.add_argument("--alignment", required=True, help="fast_align output")
+
+        subparser.add_argument("--en_dev_path", required=True, help="en dev data dir")
+        subparser.add_argument("--fr_dev_path", required=True, help="fr dev data dir")
+        subparser.add_argument("--de_dev_path", required=True, help="de dev data dir")
+
         subparser.add_argument("--save_path", required=True, help="dic to save all file")
         subparser.add_argument("--config_path", required=True, help="init config file")
         subparser.add_argument("--test_wiki_path", help="wiki test data dir", default="")
@@ -46,15 +58,34 @@ class Train(object):
         dev = Corpus(args.dev_path)
         print(train, "\n", dev)
 
+        #Alignment
+        "0-0 1-1 2-2 3-3 4-4 5-5"
+        alignments = []
+        with open(args.alignment) as f:
+            for line in f:
+                line_alignment = []
+                pairs = line.split()
+                for pair in pairs:
+                    x,y=pair.split("-")
+                    x,y = int(x), int(y)
+                    line_alignment.append((x,y))
+                alignments.append(line_alignment)
+        "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
+
         # init vocab
         print("collecting words and labels in training dataset...")
         vocab = Vocab(train)
         print(vocab)
-
         # prepare pre-trained embedding
         if args.emb_path:
+            if "English" in "train":
+                lang_emb = torch.from_numpy(bytearray("en"))
+            elif "German" in "train":
+                lang_emb = torch.from_numpy(bytearray("de")[0])
+            else:
+                lang_emb = torch.from_numpy(bytearray("fr")[0])
             print("reading pre-trained embedding...")
-            pre_emb = Embedding.load(args.emb_path)
+            pre_emb = Embedding.load(args.emb_path, args.train_path)
             print(
                 "pre-trained words:%d, dim=%d in %s"
                 % (len(pre_emb), pre_emb.dim, args.emb_path)
@@ -67,14 +98,14 @@ class Train(object):
 
         # init parser
         print("initializing model...")
-        ucca_parser = UCCA_Parser(vocab, config.ucca, pre_emb=embedding)
+        ucca_parser = UCCA_Parser(vocab, config.ucca,  pre_emb=embedding)
         if torch.cuda.is_available():
             ucca_parser = ucca_parser.cuda()
 
         # prepare data
         print("preparing input data...")
         train_loader = Data.DataLoader(
-            dataset=train.generate_inputs(vocab, True),
+            dataset=train.generate_inputs(vocab, True, alignments),
             batch_size=config.ucca.batch_size,
             shuffle=True,
             collate_fn=collate_fn,

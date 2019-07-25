@@ -16,6 +16,8 @@ if __name__ == '__main__':
         'evaluate': Evaluate(),
     }
     for name, subcommand in subcommands.items():
+        print(name)
+        print(subcommand)
         subparser = subcommand.add_subparser(name, subparsers)
         subparser.add_argument("--gpu", default=-1, help="gpu id")
         subparser.add_argument("--seed", type=int, default=1, help="random seed")

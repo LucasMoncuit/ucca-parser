@@ -5,6 +5,7 @@ from .dataset import TensorDataSet, collate_fn
 from .common import get_config
 from .optimizer import Transformer_ScheduledOptim, ScheduledOptim, MyScheduledOptim
 from .evaluator import UCCA_Evaluator
+from parser import UCCA_Parser
 
 __all__ = (
     "Corpus",
@@ -18,4 +19,5 @@ __all__ = (
     "ScheduledOptim",
     "MyScheduledOptim",
     "UCCA_Evaluator",
+    "UCCA_Parser",
 )

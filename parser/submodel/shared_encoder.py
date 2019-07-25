@@ -8,6 +8,7 @@ from torch.nn.utils.rnn import (
     pad_packed_sequence,
 )
 
+
 from parser.module import CharLSTM, EncoderLayer, PositionEncoding
 
 
@@ -93,4 +94,6 @@ class LSTM_Encoder(nn.Module):
         x_backward = x_backward[1:, 1:].permute(2, 0, 1, 3)
         x_span = torch.cat([x_forward[mask], x_backward[mask]], -1)
         x_span = pad_sequence(torch.split(x_span, lens.tolist()), True)
+        assert type(x_span) == list
+        assert type((sen_lens -2).tolist()) == list
         return x_span, (sen_lens - 2).tolist()

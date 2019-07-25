@@ -12,11 +12,12 @@ from .utils import get_config
 
 
 class UCCA_Parser(torch.nn.Module):
-    def __init__(self, vocab, args, pre_emb=None):
+    def __init__(self, vocab,  args, pre_emb=None):
         super(UCCA_Parser, self).__init__()
         self.vocab = vocab
         self.type = args.type
 
+        self.parallel = True
         self.shared_encoder = LSTM_Encoder(
             vocab=vocab,
             ext_emb=pre_emb,
@@ -62,10 +63,31 @@ class UCCA_Parser(torch.nn.Module):
             mlp_label_dim=args.mlp_label_dim,
         )
 
-    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees=None, all_nodes=None, all_remote=None):
-        spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs)
+    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees=None, all_nodes=None, all_remote=None, alignments=None):
+        spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, self.parallel)
+        #TODO : Initialize self.parallel --> Check
+        #TODO : When parallel == True each parameter must be a list of pairs --> Check
+        #TODO : Shared_encoder should return a list of pairs if a list of pairs is given --> Check
+        "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
 
-        if self.training:
+        if self.parallel:
+            assert all(isinstance(item, tuple) for item in word_idxs)
+            assert all(isinstance(item, tuple) for item in pos_idxs)
+            assert all(isinstance(item, tuple) for item in dep_idxs)
+            assert all(isinstance(item, tuple) for item in ent_idxs)
+            assert all(isinstance(item, tuple) for item in ent_iob_idxs)
+            assert all(isinstance(item, tuple) for item in passages)
+            '''[
+                ([1,2,3],[4,5,6]),
+                ([1,2,3],[4,5,6]),
+            ]'''
+            loss = 0
+            for (x_spans, y_spans), instance_alignment in zip(spans,alignments):
+                for x,y in instance_alignment:
+                    loss += (x_spans[x] - y_spans[y])**2
+            return loss
+
+        elif self.training:
             span_loss = self.span_parser.get_loss(spans, sen_lens, trees)
             remote_loss = self.remote_parser.get_loss(spans, sen_lens, all_nodes, all_remote)
             return span_loss, remote_loss
