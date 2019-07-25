@@ -30,7 +30,7 @@ if [ ! -d "$save_path" ]; then
     mkdir -p "$save_path"
     cp $config_path $save_path
 fi
-
+export PYTHONPATH=$PWD
 python -u run.py train\
     --gpu=$gpu \
     --save_path=$save_path \

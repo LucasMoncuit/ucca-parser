@@ -17,7 +17,7 @@ class UCCA_Parser(torch.nn.Module):
         self.vocab = vocab
         self.type = args.type
 
-        self.parallel = True
+        self.parallel = True    #Because of multilingual work, helps to get the parallel loss
         self.shared_encoder = LSTM_Encoder(
             vocab=vocab,
             ext_emb=pre_emb,
@@ -65,8 +65,7 @@ class UCCA_Parser(torch.nn.Module):
 
     def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees=None, all_nodes=None, all_remote=None, alignments=None):
         spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, self.parallel)
-        #TODO : Initialize self.parallel --> Check
-        #TODO : When parallel == True each parameter must be a list of pairs --> Check
+        #TODO : When parallel == True each parameter must be a list of pairs --> Might be a tensor
         #TODO : Shared_encoder should return a list of pairs if a list of pairs is given --> Check
         "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
 

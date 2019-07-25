@@ -8,7 +8,6 @@ import time
 import torch
 import torch.nn as nn
 
-from parser import UCCA_Parser
 
 def format_elapsed(start_time):
     elapsed_time = int(time.time() - start_time)
@@ -32,11 +31,10 @@ class Trainer(object):
         self.patience = patience
 
 
-    def update(self, batch):
+    def update(self, batch, parallel):
         self.optimizer.zero_grad()
         self.parser.zero_grad()
 
-        parallel = UCCA_Parser.parallel
 
         span_losses, remote_losses = 0, 0
 
