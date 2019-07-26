@@ -123,3 +123,11 @@ optional arguments:
 ## Convertion
 
 Convertion codes are included in `parser.convert`.  The function `UCCA2tree` is used to convert a ucca passage to a tree. The function `to_UCCA` is used to convert a tree to a UCCA passage. Remote edges recovery codes are included in `parser.submodel.remote_parser.py` independently.
+
+
+--
+
+Cross-lingual parsing (I'll check on my paper #Overleaf)
+- Where did I get the tokenization file
+-Tokenization and merging (write where the script is)
+- Fast_align on tokenized_merged data (where did I get the script ?)

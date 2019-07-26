@@ -63,10 +63,9 @@ class UCCA_Parser(torch.nn.Module):
             mlp_label_dim=args.mlp_label_dim,
         )
 
-    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees=None, all_nodes=None, all_remote=None, alignments=None):
+    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments=None, trees=None, all_nodes=None, all_remote=None):
         spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, self.parallel)
         #TODO : When parallel == True each parameter must be a list of pairs --> Might be a tensor
-        #TODO : Shared_encoder should return a list of pairs if a list of pairs is given --> Check
         "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
 
         if self.parallel:
