@@ -34,7 +34,7 @@ class Vocab(object):
         self._dep2id = {p: i for i, p in enumerate(self._dep)}
         self._ent2id = {p: i for i, p in enumerate(self._ent)}
         self._ent_iob2id = {p: i for i, p in enumerate(self._ent_iob)}
-        
+
         self._edge_label2id = {e: i for i, e in enumerate(self._edge_label)}
         self._parse_label2id = {p: i for i, p in enumerate(self._parse_label)}
 
@@ -57,7 +57,7 @@ class Vocab(object):
     def extend(self, words):
         self._word.extend(sorted(set(words).difference(self._word2id)))
         self._word2id = {word: i for i, word in enumerate(self._word)}
- 
+
     @staticmethod
     def collect(corpus):
         token, edge = [], []
@@ -135,7 +135,6 @@ class Vocab(object):
     def num_parse_label(self):
         return len(self._parse_label)
 
-
     def save(self, filename):
         with open(filename, "wb") as f:
             pickle.dump(self, f)
@@ -199,7 +198,7 @@ class Vocab(object):
             return self._edge_label2id.get(label, 0)
         else:
             return [self._edge_label2id.get(l, 0) for l in label]
-    
+
     def id2parse_label(self, id):
         return self._parse_label[id]
 

@@ -63,26 +63,27 @@ class UCCA_Parser(torch.nn.Module):
             mlp_label_dim=args.mlp_label_dim,
         )
 
-    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments=None, trees=None, all_nodes=None, all_remote=None):
-        spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, self.parallel)
+    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, trees=None, all_nodes=None, all_remote=None):
+        spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs)
         #TODO : When parallel == True each parameter must be a list of pairs --> Might be a tensor
         "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
 
         if self.parallel:
-            assert all(isinstance(item, tuple) for item in word_idxs)
-            assert all(isinstance(item, tuple) for item in pos_idxs)
-            assert all(isinstance(item, tuple) for item in dep_idxs)
-            assert all(isinstance(item, tuple) for item in ent_idxs)
-            assert all(isinstance(item, tuple) for item in ent_iob_idxs)
-            assert all(isinstance(item, tuple) for item in passages)
+            assert all(isinstance(item, torch.Tensor) for item in word_idxs)
+            assert all(isinstance(item, torch.Tensor) for item in pos_idxs)
+            assert all(isinstance(item, torch.Tensor) for item in dep_idxs)
+            assert all(isinstance(item, torch.Tensor) for item in ent_idxs)
+            assert all(isinstance(item, torch.Tensor) for item in ent_iob_idxs)
             '''[
                 ([1,2,3],[4,5,6]),
                 ([1,2,3],[4,5,6]),
             ]'''
             loss = 0
-            for (x_spans, y_spans), instance_alignment in zip(spans,alignments):
+            print(alignments)
+            for x_spans, instance_alignment in zip(spans, alignments):
+                print(type(instance_alignment))
                 for x,y in instance_alignment:
-                    loss += (x_spans[x] - y_spans[y])**2
+                    loss += (x_spans[x] - x_spans[y])**2
             return loss
 
         elif self.training:

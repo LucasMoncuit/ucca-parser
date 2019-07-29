@@ -21,7 +21,7 @@ def format_elapsed(start_time):
 
 
 class Trainer(object):
-    def __init__(self, parser, optimizer, evaluator, batch_size, epoch, patience, path):
+    def __init__(self, parser, optimizer, evaluator, batch_size, epoch, patience, path, parallel=True):
         self.parser = parser
         self.optimizer = optimizer
         self.evaluator = evaluator
@@ -29,6 +29,7 @@ class Trainer(object):
         self.batch_size = batch_size
         self.epoch = epoch
         self.patience = patience
+        self.parallel = parallel
 
 
     def update(self, batch, parallel):
@@ -39,7 +40,7 @@ class Trainer(object):
         span_losses, remote_losses = 0, 0
 
         if parallel:
-            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, all_nodes, all_remote = (
+            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, all_nodes, all_remote = (
                 batch
             )
             batch_size = len(word_idxs)
@@ -60,6 +61,7 @@ class Trainer(object):
                         ent_idx.cuda(),
                         ent_iob_idx.cuda(),
                         passages[i: i + 5],
+                        alignments[i: i +5],
                         all_nodes[i: i + 5],
                         all_remote[i: i + 5],
                     )
@@ -71,6 +73,7 @@ class Trainer(object):
                         ent_idx,
                         ent_iob_idx,
                         passages[i: i + 5],
+                        alignments[i: i + 5],
                         all_nodes[i: i + 5],
                         all_remote[i: i + 5],
                     )
@@ -138,7 +141,7 @@ class Trainer(object):
             time_start = datetime.datetime.now()
 
             for step, batch in enumerate(train):
-                loss = self.update(batch)
+                loss = self.update(batch, self.parallel)
                 print(
                     "epoch %d batch %d/%d batch-loss %f epoch-elapsed %s "
                     % (

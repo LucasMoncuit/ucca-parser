@@ -70,14 +70,14 @@ class Train(object):
                     x,y = int(x), int(y)
                     line_alignment.append((x,y))
                 alignments.append(line_alignment)
-        "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
+        "[[(0,0),(1,1), (2,2) ..., (5,5)]]"
 
         # init vocab
         print("collecting words and labels in training dataset...")
         vocab = Vocab(train)
         print(vocab)
         # prepare pre-trained embedding
-        if args.emb_path:
+        '''if args.emb_path:
             if "English" in "train":
                 lang_emb = torch.from_numpy(bytearray("en"))
             elif "German" in "train":
@@ -89,9 +89,9 @@ class Train(object):
             print(
                 "pre-trained words:%d, dim=%d in %s"
                 % (len(pre_emb), pre_emb.dim, args.emb_path)
-            )
-        else:
-            pre_emb = None
+            )'''
+
+        pre_emb = None
         embedding = vocab.read_embedding(config.ucca.word_dim, pre_emb)
         vocab_path = os.path.join(args.save_path, "vocab.pt")
         torch.save(vocab, vocab_path)

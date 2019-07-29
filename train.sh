@@ -18,7 +18,7 @@ config_path=./config.json
 test_wiki_path=datasets/testSet/UCCA_English-Wiki
 test_20k_path=datasets/testSet/UCCA_English-20K
 
-Alignment=datasets/alignmentSet/
+Alignment=datasets/alignmentSet/alignment.txt
 
 Parallel=True
 
