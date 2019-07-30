@@ -65,7 +65,6 @@ class UCCA_Parser(torch.nn.Module):
 
     def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, trees, all_nodes, all_remote):
         spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs)
-        #TODO : When parallel == True each parameter must be a list of pairs --> Might be a tensor
         "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
         if self.training:
             parallel_loss = []
