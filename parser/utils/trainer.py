@@ -37,10 +37,10 @@ class Trainer(object):
         self.parser.zero_grad()
 
 
-        span_losses, remote_losses = 0, 0
+        span_losses, remote_losses, parallel_losses = 0, 0, 0
 
         if parallel:
-            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, all_nodes, all_remote = (
+            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees, all_nodes, all_remote, alignments = (
                 batch
             )
             batch_size = len(word_idxs)
@@ -54,34 +54,37 @@ class Trainer(object):
 
 
                 if torch.cuda.is_available():
-                    span_loss, remote_loss = self.parser.parse(
+                    span_loss, remote_loss, parallel_loss = self.parser.parse(
                         word_idx.cuda(),
                         pos_idx.cuda(),
                         dep_idx.cuda(),
                         ent_idx.cuda(),
                         ent_iob_idx.cuda(),
                         passages[i: i + 5],
-                        alignments[i: i +5],
+                        trees[i: i + 5],
                         all_nodes[i: i + 5],
                         all_remote[i: i + 5],
+                        alignments,
                     )
                 else:
-                    span_loss, remote_loss = self.parser.parse(
+                    span_loss, remote_loss, parallel_loss = self.parser.parse(
                         word_idx,
                         pos_idx,
                         dep_idx,
                         ent_idx,
                         ent_iob_idx,
                         passages[i: i + 5],
-                        alignments[i: i + 5],
+                        trees[i: i + 5],
                         all_nodes[i: i + 5],
                         all_remote[i: i + 5],
+                        alignments,
                     )
+                parallel_losses += sum(parallel_loss)
                 span_losses += sum(span_loss)
                 remote_losses += sum(remote_loss)
 
         else:
-            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees, all_nodes, all_remote = (
+            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees, all_nodes, all_remote, alignments = (
                 batch
             )
             batch_size = len(word_idxs)
@@ -93,7 +96,7 @@ class Trainer(object):
             for i, word_idx, pos_idx, dep_idx, ent_idx, ent_iob_idx in zip(range(0, batch_size, 5), word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs):
 
                 if torch.cuda.is_available():
-                    span_loss, remote_loss = self.parser.parse(
+                    span_loss, remote_loss, parallel_loss = self.parser.parse(
                         word_idx.cuda(),
                         pos_idx.cuda(),
                         dep_idx.cuda(),
@@ -103,9 +106,10 @@ class Trainer(object):
                         trees[i : i + 5],
                         all_nodes[i : i + 5],
                         all_remote[i : i + 5],
+                        alignments,
                     )
                 else:
-                    span_loss, remote_loss = self.parser.parse(
+                    span_loss, remote_loss, parallel_loss = self.parser.parse(
                         word_idx,
                         pos_idx,
                         dep_idx,
@@ -115,12 +119,14 @@ class Trainer(object):
                         trees[i : i + 5],
                         all_nodes[i : i + 5],
                         all_remote[i : i + 5],
+                        alignments,
                     )
 
+                parallel_losses += sum(parallel_loss)
                 span_losses += sum(span_loss)
                 remote_losses += sum(remote_loss)
 
-        loss = span_losses / batch_size + remote_losses
+        loss = span_losses / batch_size + remote_losses + parallel_losses
         loss.backward()
         print(loss)
         nn.utils.clip_grad_norm_(self.parser.parameters(), 5.0)

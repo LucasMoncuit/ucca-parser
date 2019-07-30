@@ -34,7 +34,7 @@ class Corpus(object):
             passages.append(xml2passage(file_path))
         return passages
 
-    def generate_inputs(self, vocab, is_training=False, alignments=None):
+    def generate_inputs(self, vocab, alignments, is_training=False, parallel=True):
         word_idxs = []
         pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs = [], [], [], []
         trees, all_nodes, all_remote = [], [], []
@@ -69,6 +69,11 @@ class Corpus(object):
                 all_nodes.append([])
                 all_remote.append([])
 
+        if parallel:
+            alignments = alignments
+        else:
+            alignments = [[] * len(word_idxs)]
+
         return TensorDataSet(
             word_idxs,
             pos_idxs,
@@ -79,7 +84,7 @@ class Corpus(object):
             trees,
             all_nodes,
             all_remote,
-            alignments or [[] * len(word_idxs)],
+            alignments,
         )
 
 

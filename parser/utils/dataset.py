@@ -22,8 +22,10 @@ def collate_fn(data):
     ent_idx = list(zip(*data))[3]
     ent_iob_idx = list(zip(*data))[4]
     passages = list(zip(*data))[5]
-    all_nodes = list(zip(*data))[6]
-    all_remote  = list(zip(*data))[7]
+    trees = list(zip(*data))[6]
+    all_nodes = list(zip(*data))[7]
+    all_remote  = list(zip(*data))[8]
+    alignments = list(zip(*data))[9]
     return (
         pad_sequence(word_idx, True),
         pad_sequence(pos_idx, True),
@@ -31,6 +33,8 @@ def collate_fn(data):
         pad_sequence(ent_idx, True),
         pad_sequence(ent_iob_idx, True),
         passages,
+        trees,
         all_nodes,
         all_remote,
+        alignments,
     )

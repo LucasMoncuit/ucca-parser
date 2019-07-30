@@ -69,8 +69,9 @@ class Train(object):
                     x,y=pair.split("-")
                     x,y = int(x), int(y)
                     line_alignment.append((x,y))
+                line_alignment = torch.Tensor(line_alignment)
                 alignments.append(line_alignment)
-        "[[(0,0),(1,1), (2,2) ..., (5,5)]]"
+        "[[(0,0),(1,1), (2,2) ..., (5,5)], [ ..., ...], ...]]"
 
         # init vocab
         print("collecting words and labels in training dataset...")
@@ -105,13 +106,13 @@ class Train(object):
         # prepare data
         print("preparing input data...")
         train_loader = Data.DataLoader(
-            dataset=train.generate_inputs(vocab, True, alignments),
+            dataset=train.generate_inputs(vocab, alignments, True, True), #Second "True" because here parallel == True
             batch_size=config.ucca.batch_size,
             shuffle=True,
             collate_fn=collate_fn,
         )
         dev_loader = Data.DataLoader(
-            dataset=dev.generate_inputs(vocab, False),
+            dataset=dev.generate_inputs(vocab, alignments, False, True), #Same
             batch_size=10,
             shuffle=False,
             collate_fn=collate_fn,
@@ -148,7 +149,7 @@ class Train(object):
             test = Corpus(args.test_wiki_path)
             print(test)
             test_loader = Data.DataLoader(
-                dataset=test.generate_inputs(vocab, False),
+                dataset=test.generate_inputs(vocab, alignments, False, True),
                 batch_size=10,
                 shuffle=False,
                 collate_fn=collate_fn,
@@ -165,7 +166,7 @@ class Train(object):
             test = Corpus(args.test_20k_path)
             print(test)
             test_loader = Data.DataLoader(
-                dataset=test.generate_inputs(vocab, False),
+                dataset=test.generate_inputs(vocab, alignments, False, True),
                 batch_size=10,
                 shuffle=False,
                 collate_fn=collate_fn,

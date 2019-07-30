@@ -67,34 +67,28 @@ class UCCA_Parser(torch.nn.Module):
         spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs)
         #TODO : When parallel == True each parameter must be a list of pairs --> Might be a tensor
         "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
+        if self.training:
+            parallel_loss = []
+            if self.parallel:
+                assert all(isinstance(item, torch.Tensor) for item in word_idxs)
+                assert all(isinstance(item, torch.Tensor) for item in pos_idxs)
+                assert all(isinstance(item, torch.Tensor) for item in dep_idxs)
+                assert all(isinstance(item, torch.Tensor) for item in ent_idxs)
+                assert all(isinstance(item, torch.Tensor) for item in ent_iob_idxs)
 
-        if self.parallel:
-            assert all(isinstance(item, torch.Tensor) for item in word_idxs)
-            assert all(isinstance(item, torch.Tensor) for item in pos_idxs)
-            assert all(isinstance(item, torch.Tensor) for item in dep_idxs)
-            assert all(isinstance(item, torch.Tensor) for item in ent_idxs)
-            assert all(isinstance(item, torch.Tensor) for item in ent_iob_idxs)
-            '''[
-                ([1,2,3],[4,5,6]),
-                ([1,2,3],[4,5,6]),
-            ]'''
-            loss = 0
-            print(alignments)
-            for x_spans, instance_alignment in zip(spans, alignments):
-                print(type(instance_alignment))
-                for x,y in instance_alignment:
-                    loss += (x_spans[x] - x_spans[y])**2
-            return loss
-
-        elif self.training:
+                for x_spans, instance_alignment in zip(spans, alignments):
+                    for x, y in instance_alignment:
+                        parallel_loss.append((x_spans[x] - x_spans[y]) ** 2)
             span_loss = self.span_parser.get_loss(spans, sen_lens, trees)
             remote_loss = self.remote_parser.get_loss(spans, sen_lens, all_nodes, all_remote)
-            return span_loss, remote_loss
+            print(span_loss)
+            return span_loss, remote_loss, parallel_loss
         else:
             predict_trees = self.span_parser.predict(spans, sen_lens)
             predict_passages = [to_UCCA(passage, pred_tree) for passage, pred_tree in zip(passages, predict_trees)]
             predict_passages = self.remote_parser.restore_remote(predict_passages, spans, sen_lens)
             return predict_passages
+
 
     @classmethod
     def load(cls, vocab_path, config_path, state_path):
