@@ -81,10 +81,10 @@ class Corpus(object):
             ent_idxs,
             ent_iob_idxs,
             self.passages,
+            alignments,
             trees,
             all_nodes,
             all_remote,
-            alignments,
         )
 
 

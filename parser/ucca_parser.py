@@ -63,7 +63,7 @@ class UCCA_Parser(torch.nn.Module):
             mlp_label_dim=args.mlp_label_dim,
         )
 
-    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, trees=None, all_nodes=None, all_remote=None):
+    def parse(self, word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, trees, all_nodes, all_remote):
         spans, sen_lens = self.shared_encoder(word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs)
         #TODO : When parallel == True each parameter must be a list of pairs --> Might be a tensor
         "[[(0,0),,(1,1), (2,2) ..., (5,5)]]"
@@ -76,12 +76,16 @@ class UCCA_Parser(torch.nn.Module):
                 assert all(isinstance(item, torch.Tensor) for item in ent_idxs)
                 assert all(isinstance(item, torch.Tensor) for item in ent_iob_idxs)
 
-                for x_spans, instance_alignment in zip(spans, alignments):
-                    for x, y in instance_alignment:
-                        parallel_loss.append((x_spans[x] - x_spans[y]) ** 2)
+                for x_spans, instance_alignment in zip(spans,alignments):
+                    for pair in instance_alignment:
+                        first_index = int(pair[0])
+                        second_index = int(pair[1])
+                        for x,y in zip(x_spans[first_index], x_spans[second_index]):
+                            parallel_loss.append((x - y) ** 2)
+                parallel_loss = torch.Tensor(parallel_loss)
+
             span_loss = self.span_parser.get_loss(spans, sen_lens, trees)
             remote_loss = self.remote_parser.get_loss(spans, sen_lens, all_nodes, all_remote)
-            print(span_loss)
             return span_loss, remote_loss, parallel_loss
         else:
             predict_trees = self.span_parser.predict(spans, sen_lens)

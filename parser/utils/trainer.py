@@ -40,7 +40,7 @@ class Trainer(object):
         span_losses, remote_losses, parallel_losses = 0, 0, 0
 
         if parallel:
-            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees, all_nodes, all_remote, alignments = (
+            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, trees, all_nodes, all_remote = (
                 batch
             )
             batch_size = len(word_idxs)
@@ -61,10 +61,10 @@ class Trainer(object):
                         ent_idx.cuda(),
                         ent_iob_idx.cuda(),
                         passages[i: i + 5],
+                        alignments,
                         trees[i: i + 5],
                         all_nodes[i: i + 5],
                         all_remote[i: i + 5],
-                        alignments,
                     )
                 else:
                     span_loss, remote_loss, parallel_loss = self.parser.parse(
@@ -74,17 +74,17 @@ class Trainer(object):
                         ent_idx,
                         ent_iob_idx,
                         passages[i: i + 5],
+                        alignments,
                         trees[i: i + 5],
                         all_nodes[i: i + 5],
                         all_remote[i: i + 5],
-                        alignments,
                     )
                 parallel_losses += sum(parallel_loss)
                 span_losses += sum(span_loss)
                 remote_losses += sum(remote_loss)
 
         else:
-            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, trees, all_nodes, all_remote, alignments = (
+            word_idxs, pos_idxs, dep_idxs, ent_idxs, ent_iob_idxs, passages, alignments, trees, all_nodes, all_remote = (
                 batch
             )
             batch_size = len(word_idxs)
@@ -103,10 +103,10 @@ class Trainer(object):
                         ent_idx.cuda(),
                         ent_iob_idx.cuda(),
                         passages[i : i + 5],
+                        alignments,
                         trees[i : i + 5],
                         all_nodes[i : i + 5],
                         all_remote[i : i + 5],
-                        alignments,
                     )
                 else:
                     span_loss, remote_loss, parallel_loss = self.parser.parse(
@@ -116,10 +116,10 @@ class Trainer(object):
                         ent_idx,
                         ent_iob_idx,
                         passages[i : i + 5],
+                        alignments,
                         trees[i : i + 5],
                         all_nodes[i : i + 5],
                         all_remote[i : i + 5],
-                        alignments,
                     )
 
                 parallel_losses += sum(parallel_loss)
