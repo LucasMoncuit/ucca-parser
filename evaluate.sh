@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gold_path=test-data/test-xml-gold/UCCA_English-Wiki
+gold_path=datasets/test-data/test-xml-gold/UCCA_English-Wiki
 save_path=./exp/lexical/english/
 
 gpu=2

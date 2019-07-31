@@ -1,22 +1,25 @@
 #!/bin/bash
 
-train_path=datasets/trainSet/UCCA_English-Wiki
-dev_path=datasets/devSet/UCCA_English-Wiki
+train_path=datasets/train-dev-data/train-xml/UCCA_English-Wiki
+dev_path=datasets/train-dev-data/dev-xml/UCCA_English-Wiki
 
 en_train_path=datasets/trainSet/UCCA_English-Wiki
 en_dev_path=train-dev-data/devSet/UCCA_English-Wiki
 
-de_train_path=datasets/trainSet/UCCA_German-20K
-de_dev_path=datasets/devSet/UCCA_German-20K
+de_train_path=datasets/train-dev-data/train-xml/UCCA_German-20K
+de_dev_path=datasets/train-dev-data/dev-xml/UCCA_German-20K
 
-fr_train_path=datasets/trainSet/UCCA_French-20K
-fr_dev_path=datasets/devSet/UCCA_French-20K
+fr_train_path=datasets/train-dev-data/train-xml/UCCA_French-20K
+fr_dev_path=datasets/train-dev-data/dev-xml/UCCA_French-20K
 
 emb_path=embedding/cc.en.300.vec.100
 save_path=./exp/multilingual-lexical/english
 config_path=./config.json
-test_wiki_path=datasets/testSet/UCCA_English-Wiki
-test_20k_path=datasets/testSet/UCCA_English-20K
+
+en_test_wiki_path=test-data/test-xml-gold/UCCA_English-Wiki
+en_test_20k_path=test-data/test-xml-gold/UCCA_English-20K
+fr_test_20k_path=test-data/test-xml-gold/UCCA_French-20K
+de_test_20k_path=test-data/test-xml-gold/UCCA_German-20K
 
 Alignment=datasets/alignmentSet/alignment.txt
 

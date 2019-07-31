@@ -337,7 +337,6 @@ class Global_Chart_Span_Parser(nn.Module):
             gold_score = self.get_gold_score(label_score, length, trees[i])
 
             batch_loss.append(pred_score - gold_score)
-        print(batch_loss)
         return batch_loss
 
     def predict(self, spans, sen_lens):

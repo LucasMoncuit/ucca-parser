@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-test_path=test-data/test-xml/UCCA_English-Wiki
-save_path=./exp/lexical/english
+test_path=datasets/test-data/test-xml/UCCA_English-Wiki
+save_path=./exp/multilingual-lexical/english
 pred_path=$save_path/UCCA_English-Wiki
 
 gpu=2

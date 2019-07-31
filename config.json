@@ -3,7 +3,7 @@
     {
         "type": "top-down", 
         
-        "word_dim": 100,
+        "word_dim": 300,
         "pos_dim": 50,
         "dep_dim": 50,
         "ent_dim": 25,
