@@ -126,10 +126,7 @@ class Trainer(object):
                 span_losses += sum(span_loss)
                 remote_losses += sum(remote_loss)
 
-        loss = span_losses / batch_size + remote_losses
-        print("Partial loss = ", loss)
-        loss += parallel_losses
-        print("Total loss = ", loss)
+        loss = span_losses / batch_size + remote_losses + parallel_losses
         loss.backward()
         nn.utils.clip_grad_norm_(self.parser.parameters(), 5.0)
         self.optimizer.step()

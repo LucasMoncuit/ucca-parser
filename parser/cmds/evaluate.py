@@ -28,6 +28,8 @@ class Evaluate(object):
         test = Corpus(args.gold_path)
         print(test)
 
+        args.alignments = []
+
         # reload parser
         print("reloading parser...")
         vocab_path = os.path.join(args.save_path, "vocab.pt")
@@ -35,8 +37,10 @@ class Evaluate(object):
         config_path = os.path.join(args.save_path, "config.json")
         ucca_parser = UCCA_Parser.load(vocab_path, config_path, state_path)
 
+        alignments = args.alignments
+
         test_loader = Data.DataLoader(
-            dataset=test.generate_inputs(ucca_parser.vocab, False),
+            dataset=test.generate_inputs(ucca_parser.vocab, alignments, False, False),
             batch_size=args.batch_size,
             shuffle=False,
             collate_fn=collate_fn,

@@ -13,7 +13,7 @@ fr_train_path=datasets/train-dev-data/train-xml/UCCA_French-20K
 fr_dev_path=datasets/train-dev-data/dev-xml/UCCA_French-20K
 
 emb_path=embedding/cc.en.300.vec.100
-save_path=./exp/multilingual-lexical/english
+save_path=./exp/multilingual-lexical2/finaltest
 config_path=./config.json
 
 en_test_wiki_path=test-data/test-xml-gold/UCCA_English-Wiki
@@ -21,7 +21,7 @@ en_test_20k_path=test-data/test-xml-gold/UCCA_English-20K
 fr_test_20k_path=test-data/test-xml-gold/UCCA_French-20K
 de_test_20k_path=test-data/test-xml-gold/UCCA_German-20K
 
-Alignment=datasets/alignmentSet/alignment.txt
+Alignment=embedding/alignment.txt
 
 Parallel=True
 
