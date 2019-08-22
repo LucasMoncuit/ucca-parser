@@ -12,8 +12,8 @@ de_dev_path=datasets/train-dev-data/dev-xml/UCCA_German-20K
 fr_train_path=datasets/train-dev-data/train-xml/UCCA_French-20K
 fr_dev_path=datasets/train-dev-data/dev-xml/UCCA_French-20K
 
-emb_path=embedding/cc.en.300.vec.100
-save_path=./exp/multilingual-lexical2/finaltest
+emb_path=embedding/cc.en.300.vec
+save_path=./exp/multilingual-lexical/finaltest
 config_path=./config.json
 
 en_test_wiki_path=test-data/test-xml-gold/UCCA_English-Wiki
