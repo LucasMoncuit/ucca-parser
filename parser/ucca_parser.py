@@ -79,8 +79,9 @@ class UCCA_Parser(torch.nn.Module):
                     for pair in instance_alignment:
                         first_index = int(pair[0])
                         second_index = int(pair[1])
-                        for x,y in zip(x_spans[first_index], x_spans[second_index]):
-                            parallel_loss.append((x - y) ** 2)
+                        if  len(x_spans[first_index]) != 0 and len(x_spans[second_index]) != 0:
+                            for x,y in zip(x_spans[first_index], x_spans[second_index]):
+                                parallel_loss.append((x - y) ** 2)
                 parallel_loss = torch.Tensor(parallel_loss)
 
             span_loss = self.span_parser.get_loss(spans, sen_lens, trees)
