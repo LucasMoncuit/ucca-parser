@@ -20,8 +20,8 @@
         "mlp_label_dim": 100,
 
         "batch_size": 9,
-        "epoch": 50,
-        "patience": 14,
+        "epoch": 20,
+        "patience": 10,
         "lr": 0.001,
         "optimizer": "adam"
     }

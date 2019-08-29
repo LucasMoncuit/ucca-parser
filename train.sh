@@ -1,6 +1,6 @@
 #!/bin/bash
 
-train_path=datasets/train-dev-data/train-xml/UCCA_English-Wiki
+train_path=datasets/train-dev-data/train-xml/UCCA_German-Wiki
 dev_path=datasets/train-dev-data/dev-xml/UCCA_English-Wiki
 
 en_train_path=datasets/trainSet/UCCA_English-Wiki
@@ -13,7 +13,7 @@ fr_train_path=datasets/train-dev-data/train-xml/UCCA_French-20K
 fr_dev_path=datasets/train-dev-data/dev-xml/UCCA_French-20K
 
 emb_path=embedding/cc.en.300.vec
-save_path=./exp/multilingual-lexical/finaltest
+save_path=./exp/multilingual-lexical/finaltest_en
 config_path=./config.json
 
 en_test_wiki_path=test-data/test-xml-gold/UCCA_English-Wiki
