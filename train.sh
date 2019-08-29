@@ -1,6 +1,6 @@
 #!/bin/bash
 
-train_path=datasets/train-dev-data/train-xml/UCCA_German-Wiki
+train_path=datasets/train-dev-data/train-xml/UCCA_English-Wiki
 dev_path=datasets/train-dev-data/dev-xml/UCCA_English-Wiki
 
 en_train_path=datasets/trainSet/UCCA_English-Wiki
